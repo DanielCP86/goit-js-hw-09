@@ -1,13 +1,24 @@
 const form = document.querySelector('.form');
 
 form.addEventListener('submit', event => {
-  for (let i = 0; i <= Integer.parseInt(form.elements.amount.value); i++) {
-    let p = createPromise(
+  event.preventDefault();
+
+  for (let i = 0; i < parseInt(form.elements.amount.value); i++) {
+    createPromise(
       i + 1,
       i === 0
-        ? Integer.parseInt(form.elements.delay.value)
-        : Integer.parseInt(form.elements.step.value)
-    );
+        ? parseInt(form.elements.delay.value)
+        : parseInt(form.elements.delay.value) +
+            i * parseInt(form.elements.step.value)
+    )
+      .then(val => {
+        console.log(`✅ Fulfilled promise ${val.position} in ${val.delay}ms`);
+      })
+      .catch(error => {
+        console.log(
+          `❌ Rejected promise ${error.position} in ${error.delay}ms`
+        );
+      });
   }
 });
 
@@ -22,13 +33,7 @@ function createPromise(position, delay) {
         reject({ position, delay });
       }
     }, delay);
-  })
-    .then(val => {
-      console.log(`Fulfilled promise ${val.position} in ${val.delay}ms`);
-    })
-    .catch(error => {
-      console.log(`Rejected promise ${error.position} in ${error.delay}ms`);
-    });
+  });
 
   return pr;
 }
